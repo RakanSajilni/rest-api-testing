@@ -3,6 +3,10 @@ package com.sajilni.api.resources;
 import com.sajilni.api.entites.Message;
 import com.sajilni.api.service.MessageService;
 import org.springframework.web.bind.annotation.*;
+
+import javax.ws.rs.core.Response;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 @RestController
@@ -20,9 +24,13 @@ public class MessageResource {
         return messageService.getMessage(id);
     }
 
-    @PostMapping
-    public Message addMessage(@RequestBody Message message) {
-        return messageService.addMessage(message);
+    @RequestMapping(method = RequestMethod.POST)
+    public Response addMessage(@RequestBody Message message) throws URISyntaxException {
+        Message createdMessage = messageService.addMessage(message);
+        return Response
+                .created(new URI(String.format("/messages/%s",createdMessage.getId())))
+                .entity(createdMessage)
+                .build();
     }
 
     @PutMapping("/")

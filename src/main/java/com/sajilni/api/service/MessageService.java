@@ -2,6 +2,7 @@ package com.sajilni.api.service;
 
 import com.sajilni.api.database.DatabaseClass;
 import com.sajilni.api.entites.Message;
+import com.sajilni.api.exception.DataNotFoundException;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
@@ -12,7 +13,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class MessageService {
     private Map<Long, Message> messages = DatabaseClass.getMessages();
-
 
 
     public List<Message> getAllMessages() {
@@ -36,6 +36,8 @@ public class MessageService {
     }
 
     public Message getMessage(long id) {
+        if (messages.get(id) == null)
+            throw new DataNotFoundException("Message not found");
         return messages.get(id);
     }
 
