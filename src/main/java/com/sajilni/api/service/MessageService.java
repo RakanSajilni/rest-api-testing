@@ -4,6 +4,7 @@ import com.sajilni.api.database.DatabaseClass;
 import com.sajilni.api.entites.Message;
 import com.sajilni.api.exception.DataNotFoundException;
 import lombok.NoArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,12 +12,20 @@ import java.util.List;
 import java.util.Map;
 
 @NoArgsConstructor
-public class MessageService {
+@Service
+public class MessageService implements CommonService<Message> {
     private Map<Long, Message> messages = DatabaseClass.getMessages();
 
+    @Override
+    public List<Message> getAll() {
+        return new ArrayList<>(messages.values());
+    }
 
-    public List<Message> getAllMessages() {
-        return new ArrayList<Message>(messages.values());
+    @Override
+    public Message get(long id) {
+        if (messages.get(id) == null)
+            throw new DataNotFoundException("Message not found");
+        return messages.get(id);
     }
 
     public List<Message> getAllMessagesForYear(int year) {
@@ -35,28 +44,24 @@ public class MessageService {
         return list.subList(start, start + size);
     }
 
-    public Message getMessage(long id) {
-        if (messages.get(id) == null)
-            throw new DataNotFoundException("Message not found");
-        return messages.get(id);
-    }
 
-    public Message addMessage(Message message) {
+    public Message add(Message message) {
         message.setId(messages.size() + 1);
         messages.put(message.getId(), message);
         return message;
     }
 
-    public void removeMessage(long id) {
-        messages.remove(id);
+    public Message delete(long id) {
+        return messages.remove(id);
     }
 
-    public Message updateMessage(Message message) {
+    public Message update(Message message) {
         if (message.getId() <= 0) {
             return null;
         }
         messages.put(message.getId(), message);
         return message;
     }
+
 
 }

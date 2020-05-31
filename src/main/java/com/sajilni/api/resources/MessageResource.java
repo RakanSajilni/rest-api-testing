@@ -2,6 +2,7 @@ package com.sajilni.api.resources;
 
 import com.sajilni.api.entites.Message;
 import com.sajilni.api.service.MessageService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.ws.rs.core.Response;
@@ -12,23 +13,23 @@ import java.util.List;
 @RestController
 @RequestMapping("/messages")
 public class MessageResource {
-    MessageService messageService = new MessageService();
+    MessageService messageService;
 
     @GetMapping
     public List<Message> getMessages() {
-        return messageService.getAllMessages();
+        return messageService.getAll();
     }
 
     @GetMapping("/{id}")
     public Message getMessage(@PathVariable("id") long id) {
-        return messageService.getMessage(id);
+        return messageService.get(id);
     }
 
     @RequestMapping(method = RequestMethod.POST)
     public Response addMessage(@RequestBody Message message) throws URISyntaxException {
-        Message createdMessage = messageService.addMessage(message);
+        Message createdMessage = messageService.add(message);
         return Response
-                .created(new URI(String.format("/messages/%s",createdMessage.getId())))
+                .created(new URI(String.format("/messages/%s", createdMessage.getId())))
                 .entity(createdMessage)
                 .build();
     }
@@ -36,12 +37,12 @@ public class MessageResource {
     @PutMapping("/")
     public Message updateMessage(@PathVariable("id") long id, @RequestBody Message message) {
         message.setId(id);
-        return messageService.updateMessage(message);
+        return messageService.update(message);
     }
 
     @DeleteMapping("/{id}")
     public void removeMessage(@PathVariable("id") long id) {
-        messageService.removeMessage(id);
+        messageService.delete(id);
     }
 
 
